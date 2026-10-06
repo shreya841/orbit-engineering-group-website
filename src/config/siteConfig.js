@@ -1,8 +1,10 @@
 // Comprehensive data store for Orbit Engineering Solutions
 export const siteConfig = {
   company: {
-    name: "Orbit Engineering Solutions",
-    shortName: "OES",
+    name: "Orbit Engineering",
+    childCompanyName: "Orbit Engineering Solutions",
+    childCompanyUrl: "https://orbitengineerings.com/",
+    shortName: "Orbit",
     tagline: "India's Premier Water Infrastructure & Industrial Automation Company",
     subtagline: "Specialists in WTP, STP, RO, ETP, SCADA Telemetry, IoT Monitoring & Solar Water Schemes across India since 1998.",
     founded: 1998,
@@ -29,25 +31,20 @@ export const siteConfig = {
     headquarters: "Bhopal, Madhya Pradesh, India",
     offices: [
       {
-        type: "Working Office",
-        name: "Bhopal Central Operations",
-        address: "Root Space, Char Imli, Manipuram Colony, Bhopal, MP – 462016",
+        type: "Office",
+        name: "Orbit Engineering, Bhopal",
+        address: "Ground Floor, B-32/A Priyadarshini Colony, Sant Asharam Nagar Phase-1, Bagsewaniya, Bhopal, Madhya Pradesh 462043",
+        structuredAddress: {
+          streetAddress: "Ground Floor, B-32/A Priyadarshini Colony, Sant Asharam Nagar Phase-1, Bagsewaniya",
+          addressLocality: "Bhopal",
+          addressRegion: "Madhya Pradesh",
+          postalCode: "462043",
+          addressCountry: "IN"
+        },
+        mapsUrl: "https://www.google.com/maps?cid=4075094845643946472&g_mp=CiVnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLkdldFBsYWNlEAMYASAFKgSoqNcy",
+        mapsEmbedUrl: "https://maps.google.com/maps?cid=4075094845643946472&output=embed",
         phone: "+91 70241 28029",
-        role: "Project Engineering, SCADA Control Systems & Tender Cell"
-      },
-      {
-        type: "Branch Office",
-        name: "Arera Colony Branch",
-        address: "Flat No. 2, Block 12, Shalimar Enclave, E3 Arera Colony, Bhopal, MP – 462016",
-        phone: "+91 9039075049",
-        role: "Technical Support, Field Service Dispatch & Spare Parts"
-      },
-      {
-        type: "Head Office",
-        name: "Corporate Headquarters",
-        address: "E-45, Pride City, Katara Hills, Bhopal, MP – 462043",
-        phone: "+91 9039075048",
-        role: "Executive Board, Strategic Partnerships & Government Liaison"
+        role: "Connect with our team for engineering, technology and project enquiries."
       }
     ],
     contact: {

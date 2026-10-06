@@ -22,8 +22,8 @@ export default {
         }
       },
       fontFamily: {
-        sans: ['Outfit', 'Inter', 'sans-serif'],
-        display: ['Outfit', 'sans-serif']
+        sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+        display: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'sans-serif']
       },
       boxShadow: {
         '3d-light': '0 20px 40px -15px rgba(0, 115, 188, 0.15), 0 0 20px 0 rgba(255, 255, 255, 0.8) inset',

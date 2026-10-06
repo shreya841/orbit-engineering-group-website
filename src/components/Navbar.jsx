@@ -1,146 +1,141 @@
-import React, { useState } from 'react';
-import { Menu, X, Phone, MessageSquare } from 'lucide-react';
+import ResponsiveImage from './ResponsiveImage';
+import React, { useState, useEffect, useRef } from 'react';
+import { ArrowRight, Menu, MessageSquare, X } from 'lucide-react';
+import PageLink from './PageLink';
 
-export default function Navbar({ activePage, onNavigate }) {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+// ─── FIXED NAVBAR HEIGHT CONSTANTS ────────────────────────────────────────────
+// These values MUST match the actual rendered py-* values below so the hero's
+// static top-padding is correct on the very first paint — no JS measurement needed.
+//
+//   top state (transparent):  py-4 = 16px top + 16px bottom → total ≈ 16 + logo_h + 16
+//   scrolled state:           py-3 = 12px top + 12px bottom
+//
+// Hero uses pt-[NAVBAR_H_PX] directly in its className, keyed off these.
+// We export them so HeroSection can import the same constant.
+export const NAVBAR_TOP_H = 68;    // px — transparent/top state (py-4 + logo h-11 = 44+12+12)
+export const NAVBAR_SCROLL_H = 60; // px — scrolled state (py-3 + logo h-10 = 40+10+10) — not used by hero
 
-  const navLinks = [
-    { label: 'Home',      page: 'home' },
-    { label: 'About',     page: 'about' },
-    { label: 'Services',  page: 'services' },
-    { label: 'Ecosystem', page: 'ecosystem' },
-    { label: 'Contact',   page: 'contact' },
-  ];
+const NAV_LINKS = [
+  { label: 'Home',       page: 'home',     sectionId: 'section-home'     },
+  { label: 'About',      page: 'about',    sectionId: 'section-about'    },
+  { label: 'Products',   page: 'products', sectionId: 'section-products' },
+  { label: 'Solutions',  page: 'solutions', sectionId: 'section-solutions'},
+  { label: 'Ecosystem',  page: 'ecosystem', sectionId: 'our-ecosystem' },
+  { label: 'Contact Us', page: 'contact',  sectionId: 'section-contact'  },
+];
 
-  const isLinkActive = (page) => activePage === page;
+export default function Navbar({ activePage = 'home', onNavigate, onOpenQuote }) {
+  const [scrolled, setScrolled]       = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuButton = useRef(null);
+  const menuDisclosure = useRef(null);
+  const activeSection = NAV_LINKS.find(link => link.page === activePage)?.label;
+  const closeMenu = () => { setMenuOpen(false); if (menuDisclosure.current) menuDisclosure.current.open = false; };
+
+  // ── Scroll: detect scrolled state for bg switch ──────────────────────────
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 30);
+    // Set immediately on mount so SSR/hydration matches
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    closeMenu();
+  }, [activePage]);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const close = event => { if (event.key === 'Escape') { closeMenu(); menuButton.current?.focus(); } };
+    window.addEventListener('keydown', close);
+    return () => window.removeEventListener('keydown', close);
+  }, [menuOpen]);
 
   return (
-    <header className="fixed top-0 left-0 w-full z-[1000] bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.03)] transition-all duration-300">
-      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-[68px] flex items-center justify-between">
+    <header
+      className={`fixed top-0 left-0 w-full z-[1000] transition-all duration-300 ${
+        scrolled || menuOpen || activePage === 'solutions'
+          ? 'bg-white/95 backdrop-blur-md shadow-sm border-b border-slate-200/80'
+          : 'bg-transparent'
+      } ${scrolled || menuOpen ? 'py-3' : 'py-4'}`}
+    >
+      <div className="w-full px-6 sm:px-8 lg:px-[4%] xl:px-[5%] flex items-center gap-2 lg:gap-4">
 
-        {/* ══ 1. BRAND LOGO ══ */}
-        <button 
-          onClick={() => { onNavigate('home'); setMobileMenuOpen(false); }}
-          className="flex items-center gap-2.5 sm:gap-3 group cursor-pointer flex-shrink-0 select-none text-left focus:outline-none"
+        {/* ══ LEFT: ORBIT LOGO ══ */}
+        <PageLink
+          page="home" onNavigate={onNavigate} onClick={closeMenu}
+          aria-label="Orbit Engineering home"
+          className="flex items-center gap-2.5 group cursor-pointer select-none text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0073bc] hover:opacity-95 shrink-0"
         >
-          {/* Logo icon */}
-          <div className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
-            <img 
-              src="/logo.png" 
-              alt="ORBIT Logo" 
-              className="w-full h-full object-contain"
+          <div className="h-9 sm:h-10 lg:h-11 xl:h-12 w-auto flex items-center justify-center shrink-0">
+            <ResponsiveImage
+              src="/logo.png" sizes="70px"
+              alt="Orbit Logo"
+              width="951" height="662" decoding="async"
+              className="h-full w-auto object-contain filter drop-shadow-sm group-hover:scale-105 transition-transform"
             />
           </div>
-
-          {/* Typography */}
-          <div className="flex flex-col">
-            <span className="font-extrabold text-[19px] sm:text-[21px] leading-none tracking-tight text-[#1668b5]">
+          <div className="flex flex-col justify-center">
+            <span className="font-bold text-[21px] sm:text-[24px] lg:text-[26px] xl:text-[29px] leading-none tracking-tight text-[#0a2748] font-sans">
               ORBIT
             </span>
-            <span className="font-bold text-[8px] sm:text-[9.5px] tracking-[0.2em] uppercase leading-none mt-1 text-[#009fd9]">
-              ENGINEERING SOLUTIONS
+            <span className="text-[7px] sm:text-[8.5px] lg:text-[9px] xl:text-[10px] font-bold tracking-[0.22em] uppercase text-[#0a2748] leading-tight mt-0.5">
+              ENGINEERING COMPANY
             </span>
           </div>
-        </button>
+        </PageLink>
 
-        {/* ══ 2. NAVIGATION PILLS ══ */}
-        <nav className="hidden lg:flex items-center">
-          <div className="relative flex items-center gap-1 p-1 bg-slate-100 rounded-full border border-slate-200/80">
-            {navLinks.map(({ label, page }) => {
-              const active = isLinkActive(page);
-              return (
-                <button
-                  key={page}
-                  onClick={() => onNavigate(page)}
-                  className={`relative px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer select-none focus:outline-none ${
-                    active
-                      ? 'bg-[#1e60aa] text-white shadow-[0_2px_8px_rgba(30,96,170,0.35)]'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-white/80'
-                  }`}
-                >
-                  {label}
-                </button>
-              );
-            })}
-          </div>
-        </nav>
-
-        {/* ══ 3. QUICK ACTIONS ══ */}
-        <div className="hidden lg:flex items-center gap-3">
-          <a
-            href="tel:+917024128029"
-            className="flex items-center gap-2 text-xs font-bold text-slate-700 hover:text-[#1e60aa] transition-colors py-2 px-3 rounded-xl hover:bg-slate-50"
-          >
-            <Phone className="w-3.5 h-3.5 text-[#1e60aa]" />
-            <span>+91 70241 28029</span>
-          </a>
-
-          <button
-            onClick={() => onNavigate('contact')}
-            className="px-4.5 py-2 rounded-full bg-[#1e60aa] hover:bg-[#165091] text-white text-xs font-bold shadow-md shadow-[#1e60aa]/20 hover:scale-105 transition-all duration-200 cursor-pointer glow-btn"
-          >
-            Enquire Now
-          </button>
-        </div>
-
-        {/* ══ 3. MOBILE MENU TOGGLE ══ */}
-        <div className="flex items-center gap-2 lg:hidden">
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2.5 rounded-xl text-slate-700 bg-slate-100 hover:bg-slate-200 transition-colors focus:outline-none"
-            aria-label="Toggle navigation menu"
-          >
-            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
-        </div>
-
-      </div>
-
-      {/* ══ MOBILE DROPDOWN DRAWER ══ */}
-      {mobileMenuOpen && (
-        <div className="lg:hidden bg-white/98 backdrop-blur-xl border-b border-slate-200 px-4 py-4 space-y-1.5 shadow-xl animate-in slide-in-from-top duration-200 max-h-[85vh] overflow-y-auto">
-          {navLinks.map(({ label, page }) => {
-            const active = isLinkActive(page);
+        {/* Main page navigation */}
+        <nav aria-label="Main navigation" className="hidden lg:flex flex-1 items-center justify-center gap-4 xl:gap-6 2xl:gap-8 min-w-0">
+          {NAV_LINKS.map(({ label, page }) => {
+            const isActive = label === activeSection;
             return (
-              <button
-                key={page}
-                onClick={() => {
-                  onNavigate(page);
-                  setMobileMenuOpen(false);
-                }}
-                className={`w-full text-left px-4 py-2.5 rounded-xl text-sm font-semibold transition-colors flex items-center justify-between ${
-                  active
-                    ? 'bg-[#1e60aa] text-white shadow-sm'
-                    : 'text-slate-700 hover:bg-slate-100'
+              <PageLink
+                key={label}
+                page={page} onNavigate={onNavigate} onClick={closeMenu}
+                aria-current={isActive ? 'page' : undefined}
+                className={`relative py-1 text-[13px] xl:text-[14px] 2xl:text-[15.5px] tracking-tight transition-colors cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0073bc] whitespace-nowrap shrink-0 ${
+                  isActive
+                    ? 'text-[#0070bb] font-bold'
+                    : 'text-[#1e293b] font-semibold hover:text-[#0070bb]'
                 }`}
               >
                 <span>{label}</span>
-                {active && <span className="w-2 h-2 rounded-full bg-white animate-pulse" />}
-              </button>
+                {/* Active dot indicator */}
+                {isActive && (
+                  <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-[#0070bb]" />
+                )}
+              </PageLink>
             );
           })}
+        </nav>
 
-          {/* Mobile Direct Action Buttons */}
-          <div className="pt-3 mt-3 border-t border-slate-100 grid grid-cols-2 gap-2">
-            <a
-              href="tel:+917024128029"
-              className="flex items-center justify-center gap-1.5 py-2.5 px-3 bg-blue-50 text-[#1668b5] rounded-xl text-xs font-bold hover:bg-blue-100 transition-colors"
-            >
-              <Phone className="w-3.5 h-3.5" />
-              <span>Call Helpline</span>
-            </a>
-            <a
-              href="https://wa.me/919039075048?text=Hello%20Orbit%20Engineering"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-1.5 py-2.5 px-3 bg-emerald-50 text-emerald-700 rounded-xl text-xs font-bold hover:bg-emerald-100 transition-colors"
-            >
-              <MessageSquare className="w-3.5 h-3.5 text-emerald-600" />
-              <span>WhatsApp</span>
-            </a>
-          </div>
+        {/* ══ RIGHT: GET IN TOUCH only (no hamburger) ══ */}
+        <div className="ml-auto lg:ml-0 shrink-0">
+          <PageLink
+            page="contact" onNavigate={onNavigate} onAction={onOpenQuote}
+            aria-label="Get in Touch"
+            title="Get in Touch"
+            className="inline-flex items-center gap-2 px-3 py-2.5 sm:px-6 sm:py-3 xl:px-7 xl:py-3 rounded-full bg-[#0a233f] hover:bg-[#06192e] text-white text-[12.5px] sm:text-[13px] xl:text-[14px] font-semibold shadow-md transition-all duration-200 hover:scale-[1.02] cursor-pointer whitespace-nowrap"
+          >
+            <span className="hidden sm:inline">Get in Touch</span>
+            <MessageSquare className="sm:hidden w-4 h-4 stroke-[2.4]" />
+            <ArrowRight className="hidden sm:inline w-4 h-4 stroke-[2.4]" />
+          </PageLink>
         </div>
-      )}
+
+        <details ref={menuDisclosure} className="orbit-menu-disclosure lg:hidden" onToggle={event => setMenuOpen(event.currentTarget.open)}>
+          <summary ref={menuButton} className="orbit-menu-toggle" aria-label="Toggle navigation menu" aria-controls="mobile-navigation">
+            <Menu className="orbit-menu-open-icon" size={22} /><X className="orbit-menu-close-icon" size={22} />
+          </summary>
+          <nav id="mobile-navigation" className="orbit-mobile-nav" aria-label="Mobile navigation">
+            {NAV_LINKS.map(({ label, page }) => <PageLink key={page} page={page} onNavigate={onNavigate} onClick={closeMenu} aria-current={activePage === page ? 'page' : undefined}>{label}<ArrowRight size={17} /></PageLink>)}
+            <span>Water. People. Planet.</span>
+          </nav>
+        </details>
+
+      </div>
     </header>
   );
 }

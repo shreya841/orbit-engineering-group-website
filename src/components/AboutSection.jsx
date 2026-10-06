@@ -79,7 +79,7 @@ export default function AboutSection({ onOpenQuote }) {
 
           </div>
 
-          {/* Right 3D Visual Cards / Bhopal Offices */}
+          {/* Right 3D Visual Card / Bhopal Office */}
           <div className="lg:col-span-5 space-y-4">
             
             {/* Main Office Card */}
@@ -92,7 +92,7 @@ export default function AboutSection({ onOpenQuote }) {
               </div>
 
               <h3 className="text-xl font-bold font-display text-slate-900">
-                Our Bhopal Network & Operations
+                Our Bhopal Office
               </h3>
 
               <div className="mt-4 space-y-3.5">
@@ -108,6 +108,7 @@ export default function AboutSection({ onOpenQuote }) {
                     <div className="text-slate-600 mt-1 pl-5">
                       {office.address}
                     </div>
+                    <a href={office.mapsUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-orbit-600 font-semibold mt-3 ml-5">Get directions <MapPin className="w-3.5 h-3.5" /></a>
                   </div>
                 ))}
               </div>

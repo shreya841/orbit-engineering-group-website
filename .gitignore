@@ -8,3 +8,8 @@ dist-ssr
 .DS_Store
 .vercel
 *.log
+.qa/
+.env
+.env.*
+!.env.example
+builds/
